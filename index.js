@@ -7,10 +7,28 @@ import helmet from 'helmet'
 import authRoutes from './src/routes/authRoutes.js'
 import projectRoute from './src/routes/projectRoute.js'
 import messageRoute from './src/routes/messageRoutes.js'
+import axios from 'axios'
 dotenv.config()
 
 
 const app = express()
+
+const url = `https://portfolio-server-jmy6.onrender.com`;
+const interval = 30000;
+
+function reloadWebsite() {
+  axios
+    .get(url)
+    .then((response) => {
+      console.log("website reloded");
+    })
+    .catch((error) => {
+      console.error(`Error : ${error.message}`);
+    });
+}
+
+setInterval(reloadWebsite, interval);
+
 
 app.use(helmet())
 app.use(cors({
