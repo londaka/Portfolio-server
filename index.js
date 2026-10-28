@@ -69,7 +69,9 @@ connectDB()
 app.use('/api/auth', authRoutes)
 app.use('/auth', authRoutes)
 app.use('/api/', projectRoute)
+app.use('/', projectRoute)
 app.use('/api/messages', messageRoute)
+app.use('/messages', messageRoute)
 
 app.listen(Port, ()=> {
     console.log(`Server is running on ${Port}`)
