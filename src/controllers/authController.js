@@ -1,6 +1,13 @@
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
 
+const isDeployed = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true'
+const authCookieOptions = {
+    httpOnly: true,
+    secure: isDeployed,
+    sameSite: isDeployed ? 'none' : 'lax',
+    path: '/',
+}
 
 export async function adminLogin(req, res){
     const { email, password } = req.body ?? {}
@@ -24,10 +31,7 @@ export async function adminLogin(req, res){
     }, process.env.JWT_SECRET, {expiresIn: '7d'})
 
     res.cookie('admin_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
+        ...authCookieOptions,
         maxAge: 60*60*100
     })
     
@@ -39,12 +43,7 @@ export async function adminLogin(req, res){
 }
 
 export function adminLogout(req, res){
-    res.clearCookie('admin_token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/'
-    })
+    res.clearCookie('admin_token', authCookieOptions)
 
     return res.json({ message: 'Logged out successfully'})
 }
