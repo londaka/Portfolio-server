@@ -67,6 +67,7 @@ const Port = process.env.PORT || 3000
 connectDB()
 
 app.use('/api/auth', authRoutes)
+app.use('/auth', authRoutes)
 app.use('/api/', projectRoute)
 app.use('/api/messages', messageRoute)
 
