@@ -15,6 +15,24 @@ const app = express()
 
 const url = `https://portfolio-server-jmy6.onrender.com`;
 const interval = 30000;
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
+const isAllowedOrigin = (origin) => {
+  if (!origin || allowedOrigins.includes(origin)) {
+    return true
+  }
+
+  try {
+    const parsedOrigin = new URL(origin)
+    return parsedOrigin.protocol === 'https:' &&
+      parsedOrigin.hostname.endsWith('.vercel.app')
+  } catch {
+    return false
+  }
+}
 
 function reloadWebsite() {
   axios
@@ -32,7 +50,13 @@ setInterval(reloadWebsite, interval);
 
 app.use(helmet())
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('Origin is not allowed by CORS'))
+      }
+    },
     credentials: true
 }))
 app.use(express.json())
